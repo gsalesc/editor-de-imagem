@@ -15,7 +15,7 @@ public class Imagem
     RescaleOp res;
     private static int brilhoEscala = 0;
     private double contrasteEscala = 1.0;
-    
+    int nivelBrilho = 0;
     Imagem(BufferedImage i){
         this.img = i;
     }
@@ -84,9 +84,9 @@ public class Imagem
             
             BufferedImage img2 = this.img;
             if(aumentar)
-                res = new RescaleOp(1.0f, 10, null);
+                res = new RescaleOp(1.0f, 5, null);
             else
-                res = new RescaleOp(1.0f, -10, null);
+                res = new RescaleOp(1.0f, -5, null);
             this.img = res.filter(this.img, this.img);
         }
         

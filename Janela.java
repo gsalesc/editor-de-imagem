@@ -27,6 +27,7 @@ import java.io.FileOutputStream;
  */
 public class Janela extends JFrame implements ChangeListener
 {
+    ControleApp controle;
     JPanel painelEditor, painelFundo;
     JLabel painelImagemOriginal;
     JLabel painelImagemEditada;
@@ -54,6 +55,7 @@ public class Janela extends JFrame implements ChangeListener
     Imagem img;
     
     Janela(){
+        
         this.setSize(1200, 700);
         this.setLocationRelativeTo(null);
         this.setTitle("Editor de Imagem");
@@ -116,7 +118,7 @@ public class Janela extends JFrame implements ChangeListener
         comboFiltros.addItem("Tons de Cinza");
         
         JLabel lblIntensidade = new JLabel("  Intensidade: "); 
-        sliderIntensidade = new JSlider(0, 10, 0);
+        sliderIntensidade = new JSlider(-10, 10, 0);
         //sliderIntensidade.setValue(0);
         //sliderIntensidade.setMaximum(100);
         //sliderIntensidade.setMinimum(0);
@@ -136,6 +138,7 @@ public class Janela extends JFrame implements ChangeListener
         painelEditor.add(lblIntensidade);
         painelEditor.add(sliderIntensidade);
         this.add(painelEditor, BorderLayout.EAST);
+        this.setVisible(true);
     }
     
     private void iniciarEventos(){
@@ -149,30 +152,7 @@ public class Janela extends JFrame implements ChangeListener
                 if(retorno == JFileChooser.APPROVE_OPTION){
                     caminhoImagem = chooser.getSelectedFile().getPath();
                     //JOptionPane.showMessageDialog(null, caminhoImagem);
-                    
-                    File file = new File(caminhoImagem);
-                    imagemOriginal = new BufferedImage(painelFundo.getWidth()/2, painelFundo.getHeight(), BufferedImage.TYPE_INT_ARGB);
-                    
-                    try
-                    {
-                        imagemOriginal = ImageIO.read(file);
-                        imagemEditada = imagemOriginal;
-                        mostrarImagem = (Image)imagemOriginal;
-                        ImageIcon icon = new ImageIcon(mostrarImagem);
-                        painelImagemOriginal.setIcon(icon); 
-                        painelImagemOriginal.setText("");
-                        painelImagemEditada.setIcon(icon);
-                        painelImagemEditada.setText("");
-                        sliderIntensidade.setValue(0);
-                        img = new Imagem(imagemOriginal);
-                        valorBrilho = 0;
-                        valorContraste = 0;
-                        valorCinza = 0;
-                    }
-                    catch (Exception ioe)
-                    {
-                        JOptionPane.showMessageDialog(null, ioe.getMessage());
-                    }
+                    controle.carregarImagem(caminhoImagem);
                 }
             }
         });
@@ -201,16 +181,9 @@ public class Janela extends JFrame implements ChangeListener
         salvarItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                try{
-                    int op = Integer.parseInt(JOptionPane.showInputDialog("Deseja salvar a imagem editada?\n1- Sim\n2- Não"));
-                    if(op == 1){
-                        salvarIndex++;
-                        FileOutputStream fos = new FileOutputStream("nova"+salvarIndex+".jpg");
-                        ImageIO.write(imagemEditada, "jpg", fos);
-                    }
-                }
-                catch(Exception ex){
-                    JOptionPane.showMessageDialog(null, ex.getMessage());
+                int op = Integer.parseInt(JOptionPane.showInputDialog("Deseja salvar a imagem editada?\n1- Sim\n2- Não"));
+                if(op == 1){
+                    controle.salvarImagem(imagemEditada); 
                 }
             }
         });
@@ -224,9 +197,7 @@ public class Janela extends JFrame implements ChangeListener
             boolean aumentar = true;
             //int valor = 0;
             int v = 0;
-            
             //valor = sliderIntensidade.getValue()-intensidadeAnterior;
-            
             if(sliderIntensidade.getValue() > intensidadeAnterior){
                 v = sliderIntensidade.getValue()-intensidadeAnterior;
             }
@@ -242,7 +213,7 @@ public class Janela extends JFrame implements ChangeListener
             
             mostrarImagemEditada = (Image)imagemEditada;
             ImageIcon icon = new ImageIcon(mostrarImagemEditada);
-            painelImagemEditada.setIcon(icon); 
+            controle.carregarImagemPainelEditada(icon);
             
             if(comboFiltros.getSelectedItem().equals("Brilho")){
                 valorBrilho = sliderIntensidade.getValue();
@@ -255,8 +226,6 @@ public class Janela extends JFrame implements ChangeListener
             else if(comboFiltros.getSelectedItem().equals("Tons de Cinza")){
                 valorCinza = sliderIntensidade.getValue();
             }
-            
-        
         }
     }
     

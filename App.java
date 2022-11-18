@@ -7,8 +7,13 @@
  */
 public class App
 {
+    Janela j;
+    ControleApp ap;
+    
     public static void main(String[] args){
         Janela j = new Janela();
-        j.setVisible(true);
+        ControleApp ca = new ControleApp();
+        j.controle = ca;
+        ca.janela = j;
     }
 }
